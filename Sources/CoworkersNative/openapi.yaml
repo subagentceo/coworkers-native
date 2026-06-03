@@ -1,0 +1,77 @@
+openapi: "3.1.0"
+info:
+  title: Coworkers Agent API
+  version: "1.2.0"
+servers:
+  - url: https://agentknowledgeworkers.com
+paths:
+  /api/login:
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { email: { type: string } }, required: [email] }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/LoginResponse" } } } }
+  /api/plugins:
+    get:
+      operationId: listPlugins
+      responses:
+        "200": { content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Plugin" } } } } }
+  /api/conversations:
+    get:
+      operationId: listConversations
+      responses:
+        "200": { content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Conversation" } } } } }
+    post:
+      operationId: createConversation
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/CreateConversationRequest" } } } }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/Conversation" } } } }
+  /api/conversations/{id}:
+    get:
+      operationId: getConversation
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/Conversation" } } } }
+    delete:
+      operationId: deleteConversation
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/OkResponse" } } } }
+  /api/chat:
+    post:
+      operationId: sendMessage
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/ChatRequest" } } } }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/ChatResponse" } } } }
+  /api/memory:
+    get:
+      operationId: listMemory
+      responses:
+        "200": { content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MemoryEntry" } } } } }
+    post:
+      operationId: addMemory
+      requestBody: { content: { application/json: { schema: { $ref: "#/components/schemas/AddMemoryRequest" } } } }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/MemoryEntry" } } } }
+  /api/memory/{id}:
+    delete:
+      operationId: deleteMemory
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: "#/components/schemas/OkResponse" } } } }
+components:
+  schemas:
+    LoginResponse:  { type: object, properties: { ok: { type: boolean }, email: { type: string } }, required: [ok, email] }
+    Plugin:         { type: object, properties: { id: { type: string }, name: { type: string }, icon: { type: string }, description: { type: string } }, required: [id, name, icon, description] }
+    Message:        { type: object, properties: { id: { type: string }, role: { type: string }, content: { type: string }, timestamp: { type: string } }, required: [id, role, content, timestamp] }
+    Conversation:   { type: object, properties: { id: { type: string }, title: { type: string }, plugin: { type: string }, messages: { type: array, items: { $ref: "#/components/schemas/Message" } }, createdAt: { type: string }, updatedAt: { type: string } }, required: [id, title, plugin, messages, createdAt, updatedAt] }
+    CreateConversationRequest: { type: object, properties: { title: { type: string }, plugin: { type: string } } }
+    ChatRequest:    { type: object, properties: { message: { type: string }, conversationId: { type: string }, plugin: { type: string } }, required: [message] }
+    ChatResponse:   { type: object, properties: { conversationId: { type: string }, message: { $ref: "#/components/schemas/Message" }, title: { type: string } }, required: [conversationId, message, title] }
+    MemoryEntry:    { type: object, properties: { id: { type: string }, content: { type: string }, tags: { type: array, items: { type: string } }, createdAt: { type: string } }, required: [id, content, tags, createdAt] }
+    AddMemoryRequest: { type: object, properties: { content: { type: string }, tags: { type: array, items: { type: string } } }, required: [content] }
+    OkResponse:     { type: object, properties: { ok: { type: boolean } }, required: [ok] }

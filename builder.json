@@ -1,0 +1,12 @@
+{
+  "project": "CoworkersNative",
+  "platform": "ios",
+  "github": {
+    "owner": "subagentceo",
+    "repo": "coworkers-native"
+  },
+  "ios": {
+    "path": ".",
+    "scheme": ""
+  }
+}
